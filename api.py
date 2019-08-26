@@ -9,11 +9,8 @@ from RelationExtractor import RelationExtractor
 app = Flask(__name__)
 api = Api(app)
 
+# class for getting result from model
 relExtractor = RelationExtractor()
-# corpus = "Bill_Gates is the founder of Microsoft".lower()
-# results = relExtractor.get_result(corpus)
-# print(results)
-
 
 
 class GetData(Resource):
@@ -25,7 +22,6 @@ class GetData(Resource):
 
             _corpus = args['corpus']
             relation_list = relExtractor.get_result(_corpus)
-            # relation_list = [{'head': "a", 'tail': "b", 'rel': "c"}, {'head': "1", 'tail': "2", 'rel': "3"}]
             summary = "this is summary!"
             return {'relation': relation_list, 'summary': summary}
         except Exception as e:

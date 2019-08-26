@@ -144,16 +144,15 @@ class RelationExtractor():
             logit.extend(score[0])
         topNresult = defaultdict(list)
         for idx, scores in enumerate(logit):
-            print(idx)
             topNidx = np.argsort(scores)[-topN:]
             topNrel = []
             for idx in topNidx:
                 topNrel.append(self.id2rel[idx])
             topNvalues = [scores[i] for i in topNidx]
             topNresult[idx].append({x:y for x,y in zip(topNrel, topNvalues)})
-        return self._to_string(topNresult, preprocessed['key1'], preprocessed['key2'], preprocessed['instances'])
+        return self._to_dict(topNresult, preprocessed['key1'], preprocessed['key2'], preprocessed['instances'])
     
-    def _to_string(self, result, key1, key2, instances, topN=3):
+    def _to_dict(self, result, key1, key2, instances, topN=3):
         results = []
         for i in range(instances):
             summary = {}
