@@ -2,12 +2,18 @@ from flask import Flask
 from flask_restful import Resource, Api, reqparse
 import numpy as np
 import tensorflow as tf
-# from RelationExtractor import RelationExtractor
+from RelationExtractor import RelationExtractor
 # from Summary import Summary
 
 
 app = Flask(__name__)
 api = Api(app)
+
+relExtractor = RelationExtractor()
+# corpus = "Bill_Gates is the founder of Microsoft".lower()
+# results = relExtractor.get_result(corpus)
+# print(results)
+
 
 
 class GetData(Resource):
@@ -18,7 +24,8 @@ class GetData(Resource):
             args = parser.parse_args()
 
             _corpus = args['corpus']
-            relation_list = [{'head': "a", 'tail': "b", 'rel': "c"}, {'head': "1", 'tail': "2", 'rel': "3"}]
+            relation_list = relExtractor.get_result(_corpus)
+            # relation_list = [{'head': "a", 'tail': "b", 'rel': "c"}, {'head': "1", 'tail': "2", 'rel': "3"}]
             summary = "this is summary!"
             return {'relation': relation_list, 'summary': summary}
         except Exception as e:
