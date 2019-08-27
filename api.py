@@ -4,9 +4,14 @@ import numpy as np
 import tensorflow as tf
 from RelationExtractor import RelationExtractor
 from Summary import Summarization
+from flask_cors import CORS,cross_origin
 
 app = Flask(__name__)
+
+CORS(app)
+
 api = Api(app)
+
 
 # class for getting result from model
 relGraph = tf.Graph()

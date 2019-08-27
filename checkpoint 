@@ -1,0 +1,2 @@
+model_checkpoint_path: "nyt_pcnn_att"
+all_model_checkpoint_paths: "nyt_pcnn_att"
