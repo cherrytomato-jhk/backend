@@ -131,7 +131,7 @@ class RelationExtractor():
                     mask[i][j] = 2
                 else:
                     mask[i][j] = 3
-                    
+
         data = {
             'instances' : sentence_size,
             'words' : sentence_word_vec,
@@ -168,8 +168,8 @@ class RelationExtractor():
         for idx, scores in enumerate(logit):
             topNidx = np.argsort(scores)[-topN:]
             topNrel = []
-            for idx in topNidx:
-                topNrel.append(self.id2rel[idx])
+            for idx2 in topNidx:
+                topNrel.append(self.id2rel[idx2])
             topNvalues = [scores[i] for i in topNidx]
             topNresult[idx].append({x:y for x,y in zip(topNrel, topNvalues)})
         return self._to_dict(topNresult, preprocessed['key1'], preprocessed['key2'], preprocessed['instances'])
@@ -178,8 +178,8 @@ class RelationExtractor():
         results = []
         for i in range(instances):
             summary = {}
+            score_str = ""
             for rel in result[i]:
-                score_str = ""
                 for k, v in rel.items():
                     score_str += "{}({})\n".format(k, v)
             summary = {'head': key1[i], 'tail': key2[i], 'rel': score_str}
