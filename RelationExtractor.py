@@ -3,6 +3,7 @@ import tensorflow as tf
 import json
 import nrekit
 from collections import defaultdict
+import re
 from rake_nltk import Rake
 import nltk
 from nltk.tokenize import sent_tokenize
@@ -52,9 +53,15 @@ class RelationExtractor():
 
     def _preprocess_data(self, data):
 
+        sentences = re.sub(r"([?.!,¿-])", r" \1 ", data)
+        sentences = re.sub(r'[" "]+', " ", sentences)
+        sentences = re.sub(r"[^a-zA-Z0-9?.!,@%$¿]+", " ", sentences)
+        sentences = sentences.strip().lower()
 
-        sentences = sent_tokenize(data.lower())
-        print(sentences)
+        sentences = sent_tokenize(sentences.lower())
+        
+        # for sentence in sentences:
+        #     print(sentence)
         sentence_size = len(sentences)
 
         sentence_words = []
@@ -86,13 +93,29 @@ class RelationExtractor():
 
             sentence_words.append(words)
             sentence_word_vec.append(word_vec)
+            scope[i][0] = [i-1, i]
 
         key1_list = []
         key2_list = []
-
+        no_key_list = []
         for i in range(sentence_size):
             rake.extract_keywords_from_text(sentences[i])
-            key1, key2 = rake.get_ranked_phrases()[:2]
+            keys = rake.get_ranked_phrases()[:2]
+            if len(keys) < 2:
+                no_key_list.append(i)
+                key1_list.append(0)
+                key2_list.append(0)
+                pos1[i][j] = 0
+                pos2[i][j] = 0
+                mask[i][j] = 0
+                length[i] = 0
+                sentence_word_vec[i] = np.zeros([np.array(sentence_word_vec).shape[-1]])
+                sentence_words[i] = np.zeros([np.array(sentence_words).shape[-1]])
+                continue
+            key1 = keys[0]
+            key2 = keys[1]
+            key1 = key1.split()[0].lower()
+            key2 = key2.split()[0].lower()
             key1_list.append(key1)
             key2_list.append(key2)
             p1 = sentence_words[i].index(key1.lower())
@@ -108,8 +131,7 @@ class RelationExtractor():
                     mask[i][j] = 2
                 else:
                     mask[i][j] = 3
-            scope[i][0] = [i-1, i]
-        
+                    
         data = {
             'instances' : sentence_size,
             'words' : sentence_word_vec,

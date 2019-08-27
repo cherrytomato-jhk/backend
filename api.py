@@ -3,14 +3,18 @@ from flask_restful import Resource, Api, reqparse
 import numpy as np
 import tensorflow as tf
 from RelationExtractor import RelationExtractor
-# from Summary import Summary
-
+from Summary import Summarization
 
 app = Flask(__name__)
 api = Api(app)
 
 # class for getting result from model
-relExtractor = RelationExtractor()
+relGraph = tf.Graph()
+suGraph = tf.Graph()
+with relGraph.as_default():
+    relExtractor = RelationExtractor()
+with suGraph.as_default():
+    summarization = Summarization()
 
 
 class GetData(Resource):
@@ -21,8 +25,14 @@ class GetData(Resource):
             args = parser.parse_args()
 
             _corpus = args['corpus']
-            relation_list = relExtractor.get_result(_corpus)
-            summary = "this is summary!"
+            try:
+                relation_list = relExtractor.get_result(_corpus)
+            except Exception as e:
+                print("[Rel Error]", e)
+            try:
+                summary = summarization.get_result(_corpus)
+            except Exception as e:
+                print("[Summary Error]", e)
             return {'relation': relation_list, 'summary': summary}
         except Exception as e:
             return {'error': str(e)}
