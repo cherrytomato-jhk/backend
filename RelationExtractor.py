@@ -182,7 +182,9 @@ class RelationExtractor():
             for rel in result[i]:
                 for k, v in rel.items():
                     score_str += "{}({})\n".format(k, v)
-            summary = {'head': key1[i], 'tail': key2[i], 'rel': score_str}
+            if key1[i] == 0 or key2[i] == 0 :
+                continue
+            summary = {'source': key1[i], 'target': key2[i], 'label': score_str}
             results.append(summary)
         return results
         
